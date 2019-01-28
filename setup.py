@@ -7,5 +7,5 @@ setup(name='rgbled',
     author_email='rward@python.net',
     url='https://www.rgbled.com/',
     packages=['rgbled'],
-    install_requires=['PyQT5', 'pyqt5-tools', 'pyserial', 'ratelimit']
+    install_requires=['PyQT5', 'pyqt5-tools', 'pyserial']
 )
