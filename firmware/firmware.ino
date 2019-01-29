@@ -1,5 +1,6 @@
 #include <FastLED.h>
 #include <ArduinoJson.h>
+#include <EEPROM.h>
 
 // {"r":10,"g":30,"b":40}
 
@@ -45,9 +46,10 @@ void setup() {
 }
 
 void reset() {
-    leds[0].red   = 0;
-    leds[0].green = 0;
-    leds[0].blue  = 0;
+    leds[0].red   = EEPROM.read(0);
+    leds[0].green = EEPROM.read(1);
+    leds[0].blue  = EEPROM.read(2);
+    FastLED.setBrightness(EEPROM.read(3));
     FastLED.show();
 }
 
@@ -65,18 +67,22 @@ void loop()
     if (r != "null") {
         leds[0].red   = r.toInt();
         dataChanged = true;
+        EEPROM.write(0, leds[0].red);
     }
     if (g != "null") {
         leds[0].green = g.toInt();
         dataChanged = true;
+        EEPROM.write(1, leds[0].green);
     }
     if (b != "null") {
         leds[0].blue  = b.toInt();
         dataChanged = true;
+        EEPROM.write(2, leds[0].blue);
     }
     if (br != "null") {
         FastLED.setBrightness(br.toInt());
         dataChanged = true;
+        EEPROM.write(3, br.toInt());
     }
     if (dataChanged) {
         status();

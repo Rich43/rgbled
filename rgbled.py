@@ -12,6 +12,7 @@ from serial import Serial, SerialException
 import json
 import time
 
+
 class SerialThread(QThread):
     write = pyqtSignal('PyQt_PyObject')
     ready_signal = pyqtSignal()
@@ -29,12 +30,15 @@ class SerialThread(QThread):
         port = ports[0]
         print("Using port " + port)
         self.serial = Serial(port, 115200)
+        print("Waiting for ready signal...")
         assert b"READY" in self.serial.read_until()
+        print("Getting status...")
         decoded = bytes.decode(self.serial.read_until(), "UTF-8")
         self.status = [int(x) for x in decoded.strip().split(",")]
         print(self.status)
         self.ready = True
         self.ready_signal.emit()
+        print("Ready to go.")
 
     def handle_write(self, data):
         if self.ready:
