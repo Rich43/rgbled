@@ -4,7 +4,7 @@
 
 // {"r":10,"g":30,"b":40}
 
-DynamicJsonDocument doc;
+DynamicJsonDocument doc(1024);
 
 #define NUM_LEDS 1
 #define DATA_PIN 2
@@ -23,22 +23,24 @@ extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
 int integerFromPC = 0;
 
+void setRGB(int red, int green, int blue) {
+    leds[0].red   = red;
+    leds[0].green = green;
+    leds[0].blue  = blue;
+    FastLED.show();
+}
+
 void setup() {
     FastLED.addLeds<P9813, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
 
     Serial.begin(115200);
 
-    reset();
-    delay(100);
-    leds[0].red   = 255;
-    FastLED.show();
-    delay(100);
-    leds[0].green = 255;
-    FastLED.show();
-    delay(100);
-    leds[0].blue  = 255;
-    FastLED.show();
-    delay(100);
+    setRGB(255,0,0);
+    delay(200);
+    setRGB(0,255,0);
+    delay(200);
+    setRGB(0,0,255);
+    delay(200);
     reset();
 
     Serial.println("READY");
@@ -46,9 +48,7 @@ void setup() {
 }
 
 void reset() {
-    leds[0].red   = EEPROM.read(0);
-    leds[0].green = EEPROM.read(1);
-    leds[0].blue  = EEPROM.read(2);
+    setRGB(EEPROM.read(0), EEPROM.read(1), EEPROM.read(2));
     FastLED.setBrightness(EEPROM.read(3));
     FastLED.show();
 }
