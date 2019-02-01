@@ -89,12 +89,20 @@ class App(QtWidgets.QDialog):
         self.ui.greenSlider.valueChanged.connect(self.green_changed)
         self.ui.blueSlider.valueChanged.connect(self.blue_changed)
         ser.ready_signal.connect(self.serial_ready)
+        self.ui.redSlider.setEnabled(False)
+        self.ui.greenSlider.setEnabled(False)
+        self.ui.blueSlider.setEnabled(False)
+        self.ui.brightnessSlider.setEnabled(False)
 
     def serial_ready(self):
         self.ui.redSlider.setValue(self.ser.status[0])
+        self.ui.redSlider.setEnabled(True)
         self.ui.greenSlider.setValue(self.ser.status[1])
+        self.ui.greenSlider.setEnabled(True)
         self.ui.blueSlider.setValue(self.ser.status[2])
+        self.ui.blueSlider.setEnabled(True)
         self.ui.brightnessSlider.setValue(self.ser.status[3])
+        self.ui.brightnessSlider.setEnabled(True)
 
     def brightness_changed(self):
         value = App.set_tooltip(self.ui.brightnessSlider)
