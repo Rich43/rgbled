@@ -25,6 +25,7 @@ class SerialThread(QThread):
 
     def run(self):
         self.write.connect(self.handle_write)
+        print("Finding ports..")
         ports = SerialThread.serial_ports()
         print(ports)
         port = ports[0]
@@ -35,7 +36,6 @@ class SerialThread(QThread):
         print("Getting status...")
         decoded = bytes.decode(self.serial.read_until(), "UTF-8")
         self.status = [int(x) for x in decoded.strip().split(",")]
-        print(self.status)
         self.ready = True
         self.ready_signal.emit()
         print("Ready to go.")
@@ -84,41 +84,50 @@ class App(QtWidgets.QDialog):
         self.ui = UiDialog()
         self.ui.setup_ui(self)
 
-        self.ui.brightnessSlider.valueChanged.connect(self.brightness_changed)
-        self.ui.redSlider.valueChanged.connect(self.red_changed)
-        self.ui.greenSlider.valueChanged.connect(self.green_changed)
-        self.ui.blueSlider.valueChanged.connect(self.blue_changed)
+        self.ui.red_slider.setEnabled(False)
+        self.ui.green_slider.setEnabled(False)
+        self.ui.blue_slider.setEnabled(False)
+        self.ui.brightness_slider.setEnabled(False)
+        self.ui.on_off_checkbox.setChecked(False)
+
+        self.ui.brightness_slider.valueChanged.connect(self.brightness_changed)
+        self.ui.red_slider.valueChanged.connect(self.red_changed)
+        self.ui.green_slider.valueChanged.connect(self.green_changed)
+        self.ui.blue_slider.valueChanged.connect(self.blue_changed)
+        self.ui.on_off_checkbox.stateChanged.connect(self.on_off_changed)
         ser.ready_signal.connect(self.serial_ready)
-        self.ui.redSlider.setEnabled(False)
-        self.ui.greenSlider.setEnabled(False)
-        self.ui.blueSlider.setEnabled(False)
-        self.ui.brightnessSlider.setEnabled(False)
 
     def serial_ready(self):
-        self.ui.redSlider.setValue(self.ser.status[0])
-        self.ui.redSlider.setEnabled(True)
-        self.ui.greenSlider.setValue(self.ser.status[1])
-        self.ui.greenSlider.setEnabled(True)
-        self.ui.blueSlider.setValue(self.ser.status[2])
-        self.ui.blueSlider.setEnabled(True)
-        self.ui.brightnessSlider.setValue(self.ser.status[3])
-        self.ui.brightnessSlider.setEnabled(True)
+        self.ui.red_slider.setValue(self.ser.status[0])
+        self.ui.red_slider.setEnabled(True)
+        self.ui.green_slider.setValue(self.ser.status[1])
+        self.ui.green_slider.setEnabled(True)
+        self.ui.blue_slider.setValue(self.ser.status[2])
+        self.ui.blue_slider.setEnabled(True)
+        self.ui.brightness_slider.setValue(self.ser.status[3])
+        self.ui.brightness_slider.setEnabled(True)
+        self.ui.on_off_checkbox.setChecked(bool(self.ser.status[4]))
+        self.ui.on_off_checkbox.setEnabled(True)
 
     def brightness_changed(self):
-        value = App.set_tooltip(self.ui.brightnessSlider)
+        value = App.set_tooltip(self.ui.brightness_slider)
         self.ser.write.emit({"br": value})
 
     def red_changed(self):
-        value = App.set_tooltip(self.ui.redSlider)
+        value = App.set_tooltip(self.ui.red_slider)
         self.ser.write.emit({"r": value})
 
     def green_changed(self):
-        value = App.set_tooltip(self.ui.greenSlider)
+        value = App.set_tooltip(self.ui.green_slider)
         self.ser.write.emit({"g": value})
 
     def blue_changed(self):
-        value = App.set_tooltip(self.ui.blueSlider)
+        value = App.set_tooltip(self.ui.blue_slider)
         self.ser.write.emit({"b": value})
+
+    def on_off_changed(self):
+        value = self.ui.on_off_checkbox.isChecked()
+        self.ser.write.emit({"onoff": int(value)})
 
     @staticmethod
     def set_tooltip(obj):
