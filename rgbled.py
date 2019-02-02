@@ -88,7 +88,7 @@ class App(QtWidgets.QDialog):
         self.ui.green_slider.setEnabled(False)
         self.ui.blue_slider.setEnabled(False)
         self.ui.brightness_slider.setEnabled(False)
-        self.ui.on_off_checkbox.setChecked(False)
+        self.ui.on_off_checkbox.setEnabled(False)
 
         self.ui.brightness_slider.valueChanged.connect(self.brightness_changed)
         self.ui.red_slider.valueChanged.connect(self.red_changed)
